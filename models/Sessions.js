@@ -6,13 +6,14 @@ let sessionSchema = new Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
-    Name: {
-      type: String,
-      required: true,
-    },
     token: {
       type: String,
       required: true,
+    },
+    expiresAt: {
+      type: Date,
+      default: () => new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // One day in the future
+      index: { expires: "1d" },
     },
   },
   {

@@ -2,7 +2,9 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 const User = require("../models/User"); // User model
+const Session = require('../models/Sessions'); // Session model
 const validator = require('validator');
+const { v4: uuidv4 } = require('uuid');
 
 const passwordValidator = (password) => {
   // Regular expressions for uppercase, lowercase, and numbers
@@ -89,30 +91,52 @@ router.post("/login", (req, res) => {
     bcrypt.compare(password, user.password).then((isMatch) => {
       if (!isMatch) return res.status(400).json({ msg: "Invalid credentials" });
 
-      const sessUser = { id: user.id, name: user.name, email: user.email };
-      req.session.user = sessUser; // Auto saves session data in mongo store
+      const newSession = new Session({
+        userId: user.id,
+        token: uuidv4()
+      });
 
-      res.json({ msg: " Logged In Successfully", sessUser }); // sends cookie with sessionID automatically in response
+      //save the session in session store
+      newSession.save().then(() => {
+        console.log('Session saved');
+        res.json({ msg: " Logged In Successfully", newSession }); 
+      }).catch((err) => {
+        console.log(err);
+      });
+
     });
   });
 });
 
-router.delete("/logout", (req, res) => {
-  req.session.destroy((err) => {
-    //delete session data from store, using sessionID in cookie
-    if (err) throw err;
-    res.clearCookie("session-id"); // clears cookie containing expired sessionID
-    res.send("Logged out successfully");
+router.delete('/logout/:sessionId', (req, res) => {
+  sessionId = req.params.sessionId;
+
+  Session.findOne({ token: sessionId }).then((session) => {
+    if (!session) return res.status(400).json({ msg: "Session does not exist" });
+
+    Session.deleteOne({ token: sessionId }).then(() => {
+      res.json({ msg: " Logged Out Successfully" }); 
+    }).catch((err) => {
+      console.log(err);
+    });
   });
 });
 
-router.get("/authchecker", (req, res) => {
-  const sessUser = req.session.user;
-  if (sessUser) {
-    return res.json({ msg: " Authenticated Successfully", sessUser });
-  } else {
-    return res.status(401).json({ msg: "Unauthorized" });
-  }
+router.get("/protectedRoute", (req, res) => {
+  var sessionId = req.headers.authorization;
+  //remove bearer from token
+  sessionId = sessionId.slice(7, sessionId.length);
+  console.log(sessionId);
+
+  Session.findOne({ token: sessionId }).then((session) => {
+    if (!session) return res.status(401).json({ msg: "Unauthorized" });
+
+    User.findOne({ _id: session.userId }).then((user) => {
+      if (!user) return res.status(401).json({ msg: "Unauthorized" });
+
+      res.json({ msg: " Authenticated Successfully", user });
+    });
+  });
 });
 
 module.exports = router;
