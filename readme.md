@@ -12,3 +12,8 @@ This endpoint is used to check if a user is authorized to access the endpoint us
 
 /api/users/logout/:sessionId
 This endpoint is used to logout a particular user's session
+
+How to setup and run the the application:
+Clone the repository and run the command npm install in the root directory.
+1. Create a .env file according to the .env.example
+2. That's IT! Just run npm run and your application is up and running
