@@ -28,10 +28,10 @@ mongoose
   .catch((err) => console.log(err));
 
 // setting up connect-mongodb-session store
-const store = new MongoDBStore({
-  uri: MongoURI,
-  collection: "mySessions",
-});
+// const store = new MongoDBStore({
+//   uri: MongoURI,
+//   collection: "mySessions",
+// });
 
 // Express Bodyparser
 app.use(express.urlencoded({ extended: false }));
@@ -57,3 +57,5 @@ app.get("/", (req, res) => {
 });
 
 app.listen(PORT, () => console.log(`Server started on http://${HOST}:${PORT}`));
+
+module.exports = app;

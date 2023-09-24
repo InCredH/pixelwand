@@ -66,7 +66,7 @@ router.post("/register", (req, res) => {
         newUser
           .save()
           .then(() =>
-            res.json({
+            res.status(200).json({
               msg: "Successfully Registered",
             })
           )
@@ -99,7 +99,7 @@ router.post("/login", (req, res) => {
       //save the session in session store
       newSession.save().then(() => {
         console.log('Session saved');
-        res.json({ msg: " Logged In Successfully", newSession }); 
+        res.status(200).json({ msg: "Logged In Successfully", newSession }); 
       }).catch((err) => {
         console.log(err);
       });
@@ -115,7 +115,7 @@ router.delete('/logout/:sessionId', (req, res) => {
     if (!session) return res.status(400).json({ msg: "Session does not exist" });
 
     Session.deleteOne({ token: sessionId }).then(() => {
-      res.json({ msg: " Logged Out Successfully" }); 
+      res.json({ msg: "Logged Out Successfully" }); 
     }).catch((err) => {
       console.log(err);
     });
