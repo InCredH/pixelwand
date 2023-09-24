@@ -18,8 +18,6 @@ describe("User Registration", () => {
         done();
       });
   });
-
-  // Add more registration test cases, including validation errors, duplicate registration, etc.
 });
 
 describe("User Login", () => {
@@ -34,8 +32,6 @@ describe("User Login", () => {
         done();
       });
   });
-
-  // Add more login test cases, including invalid credentials, user not found, etc.
 });
 
 describe('Logout Endpoint', () => {
@@ -73,6 +69,4 @@ describe('Logout Endpoint', () => {
         done();
       });
   });
-
-  // Add more test cases as needed, including error scenarios.
 });
